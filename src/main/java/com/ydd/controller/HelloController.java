@@ -4,10 +4,9 @@ import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.ydd.dao.StockInfoDao;
-@EnableWebMvc
+
 @RestController
 public class HelloController {
 	

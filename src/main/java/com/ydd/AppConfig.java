@@ -8,6 +8,7 @@ import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -21,6 +22,7 @@ import com.cz.framework.CORSFilter;
 @Configuration
 @EnableTransactionManagement
 @PropertySource(value = { "classpath:application.properties" })
+@ComponentScan(basePackages = {"com.ydd"})
 public class AppConfig {
  
 	//映射配置文件的参数

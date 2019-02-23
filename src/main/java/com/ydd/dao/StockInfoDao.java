@@ -1,15 +1,12 @@
 package com.ydd.dao;
 
-import javax.annotation.Resource;
-
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.cz.framework.dao.MysqlBaseDaoImpl;
+import com.ydd.model.entity.StockInfo;
 
 
 @Repository
-public class StockInfoDao {
-
-	@Resource
-	private JdbcTemplate jdbcTemplate;
+public class StockInfoDao  extends MysqlBaseDaoImpl<StockInfo, Integer> {
 	
 }
