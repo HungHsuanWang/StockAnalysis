@@ -28,20 +28,18 @@ public class StockInfoService {
 	private StockInfoDao stockInfoDao;
 	
 	@Transactional
-	public void init() throws IOException {
-		//String url = "http://isin.twse.com.tw/isin/C_public.jsp?strMode=2";
-		String url = "http://isin.twse.com.tw/isin/C_public.jsp?strMode=4";
+	public void initStockCode() throws IOException {
+		String url = "http://isin.twse.com.tw/isin/C_public.jsp?strMode=2";
+		//String url = "http://isin.twse.com.tw/isin/C_public.jsp?strMode=4";
 		Document doc = Jsoup.connect(url).maxBodySize(0).timeout(5000).get(); 
 		Elements links = doc.getElementsByTag("tr");
 		int count = 0;
-		System.out.println("links size:" + links.size());
 		for (Element link : links) {
 			if(link.childNodeSize() > 4) {
 				Element stockType = link.child(3);
 				boolean isNormal = link.child(0).text().split("　")[0].length() == 4;
 				if(!StringUtils.isBlank(stockType.text()) && isNormal
 						&& (stockType.text().equals("上市") || stockType.text().equals("上櫃"))) {
-					System.out.println(link.text());
 					StockInfo si = new StockInfo();
 					String code = link.child(0).text().split("　")[0];
 					String name = link.child(0).text().split("　")[1];

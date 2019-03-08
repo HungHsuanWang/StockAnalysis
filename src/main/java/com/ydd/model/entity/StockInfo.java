@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Table(name = "stock_info")
 public class StockInfo {
@@ -24,6 +26,9 @@ public class StockInfo {
 
 	// 上市日
 	Date startDate;
+	
+	// 最後資料日
+	Date lastDataDate;
 	
 	// 備註
 	String remark;
@@ -54,6 +59,7 @@ public class StockInfo {
 		this.name = name;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "start_date")
 	public Date getStartDate() {
 		return startDate;
@@ -77,6 +83,15 @@ public class StockInfo {
 	public void setIndustryType(String industryType) {
 		this.industryType = industryType;
 	}	
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "last_data_date")
+	public Date getLastDataDate() {
+		return lastDataDate;
+	}
+	public void setLastDataDate(Date lastDataDate) {
+		this.lastDataDate = lastDataDate;
+	}
 	
 	@Column(name = "remark")
 	public String getRemark() {

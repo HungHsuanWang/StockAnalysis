@@ -15,11 +15,9 @@ public class StockInfoController {
 	
 	@Resource
 	private StockInfoService stockInfoService;
-
 	
     @RequestMapping("/init")
     public String init() throws IOException {
-    	stockInfoService.init();
         return "Greetings from Spring Boot!";
     }
 
