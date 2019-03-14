@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,8 +30,8 @@ public class StockInfoService {
 	
 	@Transactional
 	public void initStockCode() throws IOException {
-		String url = "http://isin.twse.com.tw/isin/C_public.jsp?strMode=2";
-		//String url = "http://isin.twse.com.tw/isin/C_public.jsp?strMode=4";
+		//String url = "http://isin.twse.com.tw/isin/C_public.jsp?strMode=2";
+		String url = "http://isin.twse.com.tw/isin/C_public.jsp?strMode=4";
 		Document doc = Jsoup.connect(url).maxBodySize(0).timeout(5000).get(); 
 		Elements links = doc.getElementsByTag("tr");
 		int count = 0;
@@ -43,8 +44,10 @@ public class StockInfoService {
 					StockInfo si = new StockInfo();
 					String code = link.child(0).text().split("　")[0];
 					String name = link.child(0).text().split("　")[1];
+					System.out.println(code + " : " + name);
 					String type = "上市".equals(stockType.text())? Constants.STOCK_TYPE_EX : Constants.STOCK_TYPE_OC;
 					Date startDate = DateUtil.getParseTime(link.child(2).text(), "yyyy/MM/dd");
+					System.out.println(startDate);
 					String industryType = link.child(4).text();
 					si.setCode(code);
 					si.setName(name);
@@ -57,5 +60,10 @@ public class StockInfoService {
 			}
 		}
 		LogUtil.info("total:" + count);
+	}
+	
+	@Transactional
+	public void update(StockInfo si) {
+		stockInfoDao.updateObject(si);
 	}
 }

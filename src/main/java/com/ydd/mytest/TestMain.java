@@ -114,4 +114,19 @@ public class TestMain {
 		}
 	}
 
+	
+	public static void main(String[] args) throws Exception {
+		System.out.println(Solution.reverse(100));
+	}
+	
+	static class Solution {
+	    public static int reverse(int x) {
+	    	String str = x + "";
+	    	if(str.length() == 1 || (x < 0 && str.length() == 2)) {
+	    		return x;
+	    	}
+	    	
+	    	return x;	        
+	    }
+	}
 }

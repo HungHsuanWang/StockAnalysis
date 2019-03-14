@@ -27,12 +27,18 @@ public class StockHistoryService {
 
 	@Resource
 	private StockInfoDao stockInfoDao;
-	
+
 	@Resource
 	private StockHistoryDao stockHistoryDao;
 
+	@Resource 
+	private StockHistoryService stockHistoryService;
+
+	@Resource
+	private StockInfoService stockInfoService;
+
 	private static final int QUERY_AMOUNT = 50;
-	
+
 	@Transactional
 	public void initStockTable() {
 		LogUtil.info("initStockTable - start");
@@ -43,40 +49,58 @@ public class StockHistoryService {
 		}
 		LogUtil.info("initStockTable - end");
 	}
-	
-	@Transactional
-	public void parseStockHistory() throws UnsupportedEncodingException {
-		//tse_0050.tw_20190120"
+
+	public void parseStockHistory(String startDateStr) throws UnsupportedEncodingException {
 		String url = "http://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=";
 		List<StockInfo> list = stockInfoDao.queryAll();
-		String startDateStr = "20190101";
 		String queryStr = "";
-		Date startDate = null;
+		Date startDate;
+		String reqUrl = "";
 		for(StockInfo si: list) {
-			String tableName = si.getType() + "_" + si.getCode();
-			System.out.println(tableName);
-			startDate = DateUtil.strToDate(startDateStr, DateUtil.YYYYMMDD);
-			queryStr = createQueryStr(si, startDate);
-			String reqUrl = url + URLEncoder.encode(queryStr, "UTF-8");
-			HttpResInfo hri = HttpsUtil.get(reqUrl, null);
-			if(!hri.isNotOk()) {
-				String respJson = hri.getRepMsg();
-				Map<String, String> returnMap = JsonUtil.toMapObject(respJson);
-				String stockArr = JsonUtil.toJson(returnMap.get("msgArray"));
-				List<StockHistory> sdList = JsonUtil.toList(stockArr, StockHistory.class);
-				if(!sdList.isEmpty()) {
-					for(StockHistory sd: sdList) {
-						System.out.println(sd.getName() + ";" + sd.getOpenPrice() + " ; " + sd.getTodayDate());
-					}
-					stockHistoryDao.batchInsertToTable(tableName, sdList);
-				} else {
-					LogUtil.info("非交易日");
-				}
-			}
-			break;
+			startDate = DateUtil.strToDate(startDateStr, DateUtil.YYYYMMDD);	
+			queryStr = createQueryStr(si, startDate);				
+			reqUrl = url + URLEncoder.encode(queryStr, "UTF-8");
+			parseTask(si, startDate, reqUrl);		
 		}
 	}
-	
+
+	private void parseTask(final StockInfo si, final Date startDate, final String reqUrl) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					if(null == si.getLastDataDate() || startDate.after(si.getLastDataDate())) {				
+						HttpResInfo hri = HttpsUtil.get(reqUrl, null);
+						if(!hri.isNotOk()) {
+							String respJson = hri.getRepMsg();
+							Map<String, String> returnMap = JsonUtil.toMapObject(respJson);
+							String stockArr = JsonUtil.toJson(returnMap.get("msgArray"));
+							List<StockHistory> sdList = JsonUtil.toList(stockArr, StockHistory.class);
+							if(!sdList.isEmpty()) {
+								for(StockHistory sd: sdList) {	
+									try {
+										stockHistoryService.save(sd);
+									} catch(Exception e) {
+										LogUtil.warn(String.format("%s日期%s重覆 - 繼續執行", si.getName(), sd.getTodayDate()));
+									}
+								}
+								si.setLastDataDate(new Date());
+								stockInfoService.update(si);
+								LogUtil.info(String.format("%s執行更新成功", si.getName()));
+							} else {
+								LogUtil.info("非交易日");
+							}
+						}
+					} else {
+						LogUtil.info(String.format("%s不執行更新，最後資料日為：%s", si.getName(), si.getLastDataDate()));
+					}
+				} catch (Exception e) {
+					LogUtil.warn(e.getMessage());
+				}
+			}
+		}).start();	
+	}
+
 	private String createQueryStr(StockInfo si, Date startDate) {
 		String queryStr = "";
 		while(startDate.before(new Date())) {
@@ -89,5 +113,10 @@ public class StockHistoryService {
 			}
 		}
 		return queryStr;
+	}
+
+	@Transactional
+	public void save(StockHistory sh) {
+		stockHistoryDao.save(sh);
 	}
 }

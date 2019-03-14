@@ -15,8 +15,7 @@ import com.ydd.util.UnixTimestampDeserializer;
 @Table(name = "stock_history")
 public class StockHistory {
 
-	@JsonProperty("d")
-	String date_id;
+	Long id;
 
 	@JsonProperty("c")
 	String code;
@@ -69,9 +68,9 @@ public class StockHistory {
 	Date createDate;
 
 	@Id
-	@Column(name = "date_id")
-	public String getDate_id() {
-		return date_id;
+	@Column(name = "id")
+	public Long getId() {
+		return id;
 	}
 	
 	@Column(name = "code")
@@ -154,8 +153,8 @@ public class StockHistory {
 		return createDate;
 	}
 
-	public void setDate_id(String date_id) {
-		this.date_id = date_id;
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 	public void setCode(String code) {

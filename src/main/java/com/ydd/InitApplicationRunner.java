@@ -21,10 +21,10 @@ public class InitApplicationRunner implements ApplicationRunner{
 	public void run(ApplicationArguments args) throws Exception {
 		LogUtil.info("springBoot init BEGINING=====");
 		// 初始化載入目前stock_info
-		stockInfoService.initStockCode();
+		//stockInfoService.initStockCode();
 		// 初始化建立個股table
-		stockHistoryService.initStockTable();
-		//stockHistoryService.parseStockHistory();
+		//stockHistoryService.initStockTable();
+		stockHistoryService.parseStockHistory("20190310");
 		LogUtil.info("springBoot ENDING=====");
 	}
 	

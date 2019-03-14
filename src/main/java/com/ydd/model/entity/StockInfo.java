@@ -59,7 +59,6 @@ public class StockInfo {
 		this.name = name;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "start_date")
 	public Date getStartDate() {
 		return startDate;

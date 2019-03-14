@@ -47,5 +47,5 @@ public class StockHistoryDao  extends MysqlBaseDaoImpl<StockHistory, Integer> {
 							sh.getBestBuyVol(), sh.getDayHigh(), sh.getDayLow(), sh.getLimitUp(), 
 							sh.getLimitBottom(), sh.getTodayDate(), sh.getCreateDate()).execSQL();
 		}
-	}
+	}	
 }

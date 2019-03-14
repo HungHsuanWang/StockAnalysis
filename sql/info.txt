@@ -1,18 +1,3 @@
-INSERT INTO `central_rech_config` VALUES ('790', '汇天付(网银)', '1', '44', NULL, 'https://gateway.huitianpay.com/Pay/KDBank.aspx', '107.00', '0', '0', '210.108.146.198,211.104.160.6', NULL, '金祥', '0.7%', NULL);
-INSERT INTO `central_rech_config` VALUES ('791', '汇天付(微信)', '3', '44', NULL, 'https://gateway.huitianpay.com/Pay/KDBank.aspx', '107.10', '0', '0', '210.108.146.198,211.104.160.6', NULL, '金祥', '4.0%', NULL);
-INSERT INTO `central_rech_config` VALUES ('792', '汇天付(快捷)', '1', '44', NULL, 'https://gateway.huitianpay.com/Pay/KDBank.aspx', '107.20', '0', '0', '210.108.146.198,211.104.160.6', NULL, '金祥', '1.3%', NULL);
-INSERT INTO `central_rech_config` VALUES ('793', '汇天付(出款)', '5', '44', NULL, 'https://gateway.huitianpay.com/Payment/BatchTransfer.aspx ', '107.30', '0', '0', '210.108.146.198,211.104.160.6', NULL, '金祥', '', '2元一笔,100-49999 单笔');
-
-INSERT INTO `central_rech_config` VALUES ('800', '云支付(支付宝)', '2', NULL, NULL, 'http://pay.manage168.com/submit.php', '108.00', '0', '0', '47.52.170.223\r\n', NULL, '永盛', '2.5%', NULL);
-INSERT INTO `central_rech_config` VALUES ('801', '云支付(财付通)', '1', NULL, NULL, 'http://pay.manage168.com/submit.php', '108.10', '0', '0', '47.52.170.223\r\n', NULL, '永盛', NULL, NULL);
-INSERT INTO `central_rech_config` VALUES ('802', '云支付(QQ钱包)', '4', NULL, NULL, 'http://pay.manage168.com/submit.php', '108.20', '0', '0', '47.52.170.223\r\n', NULL, '永盛', NULL, NULL);
-INSERT INTO `central_rech_config` VALUES ('803', '云支付(微信)', '3', NULL, NULL, 'http://pay.manage168.com/submit.php', '108.30', '0', '0', '47.52.170.223\r\n', NULL, '永盛', NULL, NULL);
-
-INSERT INTO `central_rech_config` VALUES ('781', '衫浦(出款)', '5', NULL, NULL, 'http://api.mdfmyd.top:8090/payment/pay', '109.50', '0', '0', NULL, NULL, '众购', NULL, NULL);
-
-INSERT INTO `central_rech_config` VALUES ('820', '杉德(银联)', '9', '45', NULL, 'http://103.230.236.210:8086/mpcctp/cashier/pay.ac', '109.00', '0', '0', '103.230.236.210:8086', NULL, '008', '1.46%', NULL);
-INSERT INTO `central_rech_config` VALUES ('821', '杉德(出款)', '5', NULL, NULL, 'http://103.230.236.210:8086/mpcctp/cashier/TX0001.ac', '109.10', '0', '0', '103.230.236.210:8086', NULL, '008', NULL, NULL);
-
 ~/.ssh
 ssh-keygen -t rsa -C "p0000381@gmail.com"
 
@@ -59,25 +44,17 @@ p： ex. 0
 tk0： ex. 1101.tw_tse_20150224_B_9999310874
 tk1： ex. 1101.tw_tse_20150224_B_9999293545
 
-
 CREATE TABLE `stock_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `code` varchar(32) NOT NULL COMMENT '代號',
   `name` varchar(32) NOT NULL COMMENT '名稱',
   `type` varchar(32) NOT NULL COMMENT '市場別（tse：上市；otc：上櫃）',
   `industry_type` varchar(32) NOT NULL COMMENT '產業別',
-  `start_date` timestamp NOT NULL COMMENT '上市日',
+  `start_date` timestamp default CURRENT_TIMESTAMP COMMENT '上市日',
   `remark` varchar(200) DEFAULT NULL COMMENT '備註',
-  `last_data_date` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '最後資料日',
+  `last_data_date` timestamp null DEFAULT null COMMENT '最後資料日',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='上市、櫃股票資訊';
-TRUNCATE TABLE stock_info;
-
-SELECT 1 FROM testtable LIMIT 1;
-
-SHOW TABLES LIKE 'yourtable';
-
-ALTER TABLE stock_info ADD COLUMN last_data_date DATE DEFAULT NULL COMMENT '最後資料日'
 
 CREATE TABLE `stock_history` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -87,10 +64,10 @@ CREATE TABLE `stock_history` (
   `open_price` double(20,2) NOT NULL DEFAULT '0.00' COMMENT '開盤價',
   `current_vol` int(11) DEFAULT '0' COMMENT '當盤成交量',
   `volume` int(11) DEFAULT '0' COMMENT '當日累計成交量',
-  `best_sell_price` varchar(32) NOT NULL COMMENT '最佳五檔賣出價格',
-  `best_sell_vol` varchar(32) NOT NULL COMMENT '最價五檔賣出數量',
-  `best_buy_price` varchar(32) NOT NULL COMMENT '最佳五檔買入價格',
-  `best_buy_vol` varchar(32) NOT NULL COMMENT '最佳五檔買入數量',
+  `best_sell_price` varchar(100) NOT NULL COMMENT '最佳五檔賣出價格',
+  `best_sell_vol` varchar(50) NOT NULL COMMENT '最價五檔賣出數量',
+  `best_buy_price` varchar(100) NOT NULL COMMENT '最佳五檔買入價格',
+  `best_buy_vol` varchar(50) NOT NULL COMMENT '最佳五檔買入數量',
   `day_high` double(20,2) NOT NULL DEFAULT '0.00' COMMENT '今日最高',
   `day_low` double(20,2) NOT NULL DEFAULT '0.00' COMMENT '今日最低',
   `limit_up` double(20,2) NOT NULL DEFAULT '0.00' COMMENT '今日最高',
@@ -98,8 +75,5 @@ CREATE TABLE `stock_history` (
   `today_date` timestamp NOT NULL COMMENT '資料日期',
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '資料建立日期',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `stock_history_idx` (`today_date`) USING BTREE
+  UNIQUE KEY `stock_history_idx` (`code`, `today_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='個股歷史';
-
-INSERT INTO `tse_9939` (`id`, `code`, `name`, `close_price`, `open_price`, `current_vol`, `volume`, `best_sell_price`, `best_sell_vol`, `best_buy_price`, `best_buy_vol`, `day_high`, `day_low`, `limit_up`, `limit_bottom`, `today_date`, `create_date`) VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
